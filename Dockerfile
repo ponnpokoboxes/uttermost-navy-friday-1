@@ -2,10 +2,10 @@
 FROM node:22
 
 # 作業ディレクトリを /app に
-WORKDIR /uttermost-navy-friday-1
+WORKDIR /app
 
 # app フォルダ内の内容をコンテナの /app にコピー
-COPY uttermost-navy-friday-1/ 
+COPY app/ .
 
 # 依存関係のインストール
 RUN npm install
