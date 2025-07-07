@@ -7,8 +7,12 @@ const client = new Client({
     GatewayIntentBits.MessageContent,
     GatewayIntentBits.GuildMessages,
     GatewayIntentBits.DirectMessages,
+    GatewayIntentBits.GuildPresences,
+    GatewayIntentBits.GuildMembers,
   ],
-  partials: [Partials.Channel],
+  partials: [
+    Partials.Channel,
+    Partials.MessageContent],
 });
 
 http
@@ -43,6 +47,22 @@ http
           let channelId = dataObject.userID;
           sendMsg(channelId, dataObject.comment);
           res.end();
+          return;
+        }
+        if (dataObject.type == "userCheck"){
+          console.log("ponnpoko:" + dataObject.type);
+          let userId = dataObject.userID;
+          var whoIsHere = peopleInTheGuild(userId);
+          var words = whoIsHere;
+          res.end("うにょん" + words);
+          return;
+        }
+        if (dataObject.type == "userCheck2"){
+          console.log("ponnpoko:" + dataObject.type);
+          let userId = dataObject.userID;
+          var whoIsHere = peopleInTheGuild2(userId);
+          var words = whoIsHere;
+          res.end("うにょん" + words);
           return;
         }
         res.end();
@@ -118,5 +138,35 @@ function sendDm(userId, text, option = {}) {
       .catch(console.error); // 1段階目のエラー出力
   })
     .catch(console.error); // 2段階目のエラー出力
+}
+
+function peopleInTheGuild(userId){
+  try {
+    let guild = client.guilds.cache.get("1167389033396174909");
+    let user = client.users.cache.find(user => user.id == String(userId));
+    if (!user){return "ありません";}else{
+      let memId = guild.members.cache.get(userId);
+      if (!memId){return "ありません";}else{console.log(`成功！${memId}`); let userName = String(user.username); return "あります" + String(userName)}
+    }
+  }catch(e){
+    console.log("失敗！", e)
+    return "通信エラー" + String(e);
+  }
+}
+
+function peopleInTheGuild2(userName){
+  try {
+    let guild = client.guilds.cache.get("1167389033396174909");
+    let user = client.users.cache.find(user => user.username == String(userName));
+    if (!user){return "ありません";}
+    else{
+      let userId = String(user.id);
+      let memId = guild.members.cache.get(userId);
+      if (!memId){return "ありません";}else{console.log(`成功！${memId}`); return "あります" + String(userId)}
+    }
+  }catch(e){
+    console.log("失敗！", e)
+    return "通信エラー" + String(e);
+  }
 }
 
