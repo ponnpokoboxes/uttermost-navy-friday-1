@@ -1,5 +1,7 @@
 const http = require("http");
 const querystring = require("querystring");
+const fs = require('node:fs');
+const path = require('node:path');
 const { Client, Events, GatewayIntentBits, Partials, EmbedBuilder } = require("discord.js");
 const client = new Client({
   intents: [
@@ -14,7 +16,6 @@ const client = new Client({
     Partials.Channel,
     Partials.MessageContent],
 });
-client.commands = new Collection();
 
 http
   .createServer(function (req, res) {
