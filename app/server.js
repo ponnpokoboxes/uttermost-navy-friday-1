@@ -14,6 +14,7 @@ const client = new Client({
     Partials.Channel,
     Partials.MessageContent],
 });
+client.commands = new Collection();
 
 http
   .createServer(function (req, res) {
@@ -104,6 +105,52 @@ client.on(Events.MessageCreate, async (message) => {
     let text = "ぽわ～ん";
     sendDm(userId, text);
     return;
+  }
+});
+
+// commandsフォルダから、.jsで終わるファイルのみを取得
+client.commands = new Collection(); //コマンド用
+const commandsPath = path.join(__dirname, "commands");
+const commandFiles = fs
+  .readdirSync(commandsPath)
+  .filter((file) => file.endsWith(".js"));
+
+
+ for (const file of commandFiles) {
+  const filePath = path.join(commandsPath, file);
+  const command = require(filePath);
+  // 取得した.jsファイル内の情報から、コマンドと名前をListenner-botに対して設定
+  if ("data" in command && "execute" in command) {
+    client.commands.set(command.data.name, command);
+  } else {
+    console.log(
+      `[WARNING]  ${filePath} のコマンドには、必要な "data" または "execute" プロパティがありません。`
+    );
+  }
+}
+
+// コマンドが送られてきた際の処理
+client.on(Events.InteractionCreate, async (interaction) => {
+  // コマンドでなかった場合は処理せずさよなら。
+  if (!interaction.isChatInputCommand()) return;
+
+  const command = interaction.client.commands.get(interaction.commandName);
+
+  // 一致するコマンドがなかった場合
+  if (!command) {
+    console.error(` ${interaction.commandName} というコマンドは存在しません。`);
+    return;
+  }
+
+  try {
+    // コマンドを実行
+    await command.execute(interaction);
+  } catch (error) {
+    console.error(error);
+    await interaction.reply({
+      content: "コマンドを実行中にエラーが発生しました。",
+      ephemeral: true,
+    });
   }
 });
 
