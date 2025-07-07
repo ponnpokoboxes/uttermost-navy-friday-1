@@ -2,7 +2,7 @@ const http = require("http");
 const querystring = require("querystring");
 const fs = require('node:fs');
 const path = require('node:path');
-const { Client, Events, GatewayIntentBits, Partials, EmbedBuilder } = require("discord.js");
+const { Client, Collection, Events, GatewayIntentBits, Partials, EmbedBuilder } = require("discord.js");
 const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
