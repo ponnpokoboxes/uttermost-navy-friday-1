@@ -1,5 +1,5 @@
 const http = require("http");
-const querystring = require("querystring");
+const querystring = require("query-string");
 const fs = require('node:fs');
 const path = require('node:path');
 const { Client, Collection, Events, GatewayIntentBits, Partials, EmbedBuilder } = require("discord.js");
